@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="zh-Hant">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>深刻地認識一個人</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&family=Noto+Serif+TC:wght@500;600;700;900&family=EB+Garamond:ital,wght@0,400;1,400;1,500&display=swap">
+<style>
+/* Layout: a dark candlelit table; light paper cards are the only bright objects on it. Single committed dark theme. */
+:root{
+  --bg:#17120e;            /* warm near-black table */
+  --bg-raised:#211a14;     /* raised panels */
+  --fg:#efe5d3;            /* warm cream text */
+  --fg-muted:#a3957e;      /* quiet text */
+  --line:#3a2f24;          /* hairlines */
+  --gold:#d9a35c;          /* candle gold accent */
+  --paper:#f3ead7;         /* card face */
+  --ink:#2b2318;           /* text on card face */
+  --ink-muted:#6f6350;
+  --tier0:#8fae8a;         /* 暖身 tea green */
+  --tier1:#d9a35c;         /* ★ amber */
+  --tier2:#c97f6f;         /* ★★ rose */
+  --tier3:#9c8bc6;         /* ★★★ violet */
+  --serif:"Noto Serif TC",serif;
+  --kai:"LXGW WenKai TC","Noto Serif TC",serif;
+  --eng:"EB Garamond",Georgia,serif;
+  color-scheme:dark;
+}
+body{
+  background:var(--bg);
+  background-image:radial-gradient(1200px 700px at 50% -10%, #2a1f15 0%, var(--bg) 62%);
+  color:var(--fg);
+  font-family:var(--serif);
+  margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0;
+  line-height:1.7;
+}
+.wrap{max-width:880px;margin:0 auto;padding-block:40px 64px}
+h1,h2,h3{text-wrap:balance;line-height:1.35}
+
+/* ---------- intro ---------- */
+.kicker{
+  font-size:13px;letter-spacing:.35em;color:var(--gold);
+  text-transform:uppercase;font-family:var(--eng);text-align:center;margin:0 0 14px;
+}
+.title{
+  font-size:clamp(34px,7vw,56px);font-weight:900;text-align:center;margin:0;
+  letter-spacing:.08em;
+}
+.title-en{
+  font-family:var(--eng);font-style:italic;color:var(--fg-muted);
+  text-align:center;font-size:clamp(16px,2.6vw,20px);margin:10px 0 0;
+}
+.lede{
+  font-family:var(--kai);font-size:17px;max-width:34em;margin:30px auto 0;
+  color:var(--fg);text-align:center;
+}
+.lede-en{font-family:var(--eng);font-style:italic;font-size:14.5px;color:var(--fg-muted);max-width:40em;margin:12px auto 0;text-align:center}
+.meta-row{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:28px;
+}
+.meta-chip{
+  border:1px solid var(--line);border-radius:999px;padding:5px 16px;
+  font-size:13.5px;color:var(--fg-muted);background:var(--bg-raised);
+}
+.meta-chip b{color:var(--fg);font-weight:600}
+
+.deck-legend{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:30px;
+}
+.legend-item{
+  border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg-raised);
+  display:flex;flex-direction:column;gap:3px;min-width:0;
+}
+.legend-item .stars{font-size:12px;letter-spacing:.12em}
+.legend-item .nm{font-size:14.5px;font-weight:700}
+.legend-item .ct{font-size:12px;color:var(--fg-muted)}
+
+.players-box{
+  margin-top:40px;border:1px solid var(--line);border-radius:14px;background:var(--bg-raised);
+  padding:22px clamp(18px,4vw,32px) 24px;text-align:center;
+}
+.players-box h2{font-size:16px;margin:0 0 4px;letter-spacing:.15em}
+.players-box .hint{font-size:13px;color:var(--fg-muted);margin:0 0 16px}
+.player-opts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.player-opts button{
+  width:48px;height:48px;border-radius:50%;border:1px solid var(--line);
+  background:none;color:var(--fg-muted);font-size:17px;font-weight:700;
+  font-variant-numeric:tabular-nums;transition:all .15s;
+}
+.player-opts button:hover{border-color:var(--gold);color:var(--fg)}
+.player-opts button.sel{background:var(--gold);border-color:var(--gold);color:#241a0d}
+
+.start-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:34px}
+button{font-family:var(--serif);cursor:pointer}
+.btn-primary{
+  background:var(--gold);color:#241a0d;border:none;border-radius:999px;
+  padding:13px 40px;font-size:17px;font-weight:700;letter-spacing:.12em;
+  transition:transform .15s,box-shadow .15s;box-shadow:0 4px 24px rgba(217,163,92,.25);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(217,163,92,.35)}
+.btn-ghost{
+  background:none;border:1px solid var(--line);color:var(--fg-muted);
+  border-radius:999px;padding:8px 18px;font-size:13.5px;
+}
+.btn-ghost:hover{color:var(--fg);border-color:var(--fg-muted)}
+.btn-ghost:disabled{opacity:.45;cursor:default}
+:is(button,a,summary):focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* ---------- ritual ---------- */
+.ritual-head{text-align:center;margin-bottom:28px}
+.ritual-head h1{font-size:clamp(24px,5vw,34px);font-weight:900;margin:0;letter-spacing:.1em}
+.ritual-head p{font-size:14px;color:var(--fg-muted);margin:10px auto 0;max-width:30em}
+.ritual{
+  border:1px solid var(--line);border-radius:14px;
+  background:linear-gradient(180deg,#241c14,#1c1610);
+  padding:30px clamp(18px,4vw,42px) 32px;position:relative;
+}
+.ritual::before{
+  content:"開場白 · Opening";position:absolute;top:-11px;left:24px;background:var(--bg);
+  padding:0 10px;font-size:12px;letter-spacing:.25em;color:var(--gold);
+}
+.ritual p{font-family:var(--kai);font-size:17px;margin:0 0 1em;max-width:36em}
+.ritual .en{font-family:var(--eng);font-style:italic;font-size:14.5px;color:var(--fg-muted);max-width:46em}
+.ritual .en:last-child{margin-bottom:0}
+.ritual hr{border:none;border-top:1px dashed var(--line);margin:22px 0}
+
+/* ---------- game ---------- */
+.game-head{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:22px;
+}
+.game-head h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.1em}
+.game-head .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+.turn-banner{
+  display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:20px;font-size:15px;color:var(--fg-muted);text-align:center;
+}
+.turn-banner .pill{
+  background:var(--bg-raised);border:1px solid var(--gold);color:var(--gold);
+  border-radius:999px;padding:4px 16px;font-weight:700;font-size:15px;
+  font-variant-numeric:tabular-nums;
+}
+
+.decks{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.deck{
+  position:relative;border:none;background:none;padding:0;text-align:left;
+  border-radius:12px;min-width:0;
+}
+.deck-card{
+  border-radius:12px;padding:15px 14px 13px;min-height:116px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(255,255,255,.05),transparent 60%),
+    repeating-linear-gradient(135deg,rgba(255,255,255,.028) 0 2px,transparent 2px 9px),
+    var(--bg-raised);
+  border:1px solid var(--line);border-top:3px solid var(--tc,var(--gold));
+  box-shadow:0 2px 0 #0e0a07,0 4px 0 -1px #241c14,0 6px 0 -2px #0e0a07,0 14px 22px rgba(0,0,0,.35);
+  transition:transform .18s;
+  display:flex;flex-direction:column;gap:4px;height:100%;box-sizing:border-box;
+}
+.deck:hover .deck-card,.deck:focus-visible .deck-card{transform:translateY(-3px)}
+.deck.active .deck-card{outline:2px solid var(--tc,var(--gold));outline-offset:2px}
+.deck .stars{font-size:12px;letter-spacing:.15em;color:var(--tc,var(--gold))}
+.deck .nm{font-size:15px;font-weight:700;color:var(--fg)}
+.deck .nm-en{font-family:var(--eng);font-style:italic;font-size:12px;color:var(--fg-muted)}
+.deck .count{
+  margin-top:auto;padding-top:8px;font-size:12.5px;color:var(--fg-muted);
+  font-variant-numeric:tabular-nums;
+}
+.deck .count b{color:var(--fg);font-weight:600}
+.deck.empty .deck-card{opacity:.75}
+.deck.empty .count b{color:var(--tc,var(--gold))}
+
+/* ---------- stage ---------- */
+.stage{margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.card-slot{width:min(560px,100%);perspective:1200px}
+.qcard{
+  border-radius:16px;background:var(--paper);color:var(--ink);
+  box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 18px 48px rgba(0,0,0,.5);
+  padding:26px clamp(20px,5vw,44px) 24px;
+  border-top:5px solid var(--tc,var(--gold));
+  min-height:240px;display:flex;flex-direction:column;box-sizing:border-box;
+}
+.qcard.flip{animation:flipIn .55s ease-out}
+@keyframes flipIn{
+  0%{transform:rotateY(85deg) scale(.96);opacity:0}
+  100%{transform:rotateY(0) scale(1);opacity:1}
+}
+@media (prefers-reduced-motion:reduce){
+  .qcard.flip{animation:none}
+  *{transition:none!important}
+}
+.qcard .tag-row{
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;
+  font-size:12.5px;letter-spacing:.18em;color:var(--ink-muted);margin-bottom:18px;
+}
+.qcard .tag-row .tier{color:var(--tc,var(--gold));filter:saturate(1.2) brightness(.72);font-weight:700}
+.qcard .zh{
+  font-family:var(--kai);font-size:clamp(20px,3.4vw,25px);line-height:1.75;
+  margin:0;max-width:22em;
+}
+.qcard .en{
+  font-family:var(--eng);font-style:italic;font-size:15.5px;line-height:1.6;
+  color:var(--ink-muted);margin:14px 0 0;max-width:34em;
+}
+.qcard .who{
+  margin:20px 0 0;padding-top:14px;border-top:1px dashed #d8cbae;
+  font-size:13.5px;color:var(--ink-muted);
+}
+.qcard .who b{color:var(--ink);font-weight:700}
+.qcard.placeholder{
+  align-items:center;justify-content:center;text-align:center;
+  background:repeating-linear-gradient(135deg,rgba(255,255,255,.02) 0 2px,transparent 2px 9px),var(--bg-raised);
+  color:var(--fg-muted);border:1px dashed var(--line);border-top:5px solid var(--line);
+  box-shadow:none;
+}
+.qcard.placeholder .zh{font-size:17px;color:var(--fg-muted);font-family:var(--kai)}
+.stage-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+/* ---------- helpers ---------- */
+.helpers{margin-top:50px;display:flex;flex-direction:column;gap:14px}
+details{
+  border:1px solid var(--line);border-radius:12px;background:var(--bg-raised);
+  padding:0 20px;
+}
+summary{
+  cursor:pointer;list-style:none;padding:15px 0;font-size:15.5px;font-weight:700;
+  letter-spacing:.08em;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"◆";font-size:10px;color:var(--gold);transition:transform .2s}
+details[open] summary::before{transform:rotate(90deg)}
+summary .s-en{font-family:var(--eng);font-style:italic;font-weight:400;font-size:13px;color:var(--fg-muted)}
+.d-body{border-top:1px solid var(--line);padding:18px 0 20px}
+.rules{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+.rules li{font-family:var(--kai);font-size:15.5px;padding-left:1.4em;position:relative;max-width:36em}
+.rules li::before{content:"・";position:absolute;left:0;color:var(--gold)}
+.rules.steps li::before{content:counter(step);counter-increment:step;font-family:var(--eng);font-size:13px}
+.rules.steps{counter-reset:step}
+.rules .en{display:block;font-family:var(--eng);font-style:italic;font-size:13px;color:var(--fg-muted)}
+.helper-group{margin-top:18px}
+.helper-group h3{
+  font-size:13px;margin:0 0 8px;color:var(--gold);letter-spacing:.2em;font-weight:600;
+}
+.phrase{display:flex;flex-direction:column;gap:1px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.phrase:last-child{border-bottom:none}
+.phrase .zh{font-family:var(--kai);font-size:15.5px}
+.phrase .en{font-family:var(--eng);font-style:italic;font-size:13px;color:var(--fg-muted)}
+.steps-note{font-size:13.5px;color:var(--fg-muted);margin:14px 0 0;max-width:38em}
+
+/* ---------- footer ---------- */
+.foot{
+  margin-top:46px;border-top:1px solid var(--line);padding-top:20px;
+  display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+  font-size:13px;color:var(--fg-muted);
+}
+.confirm-reset{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.btn-danger{
+  background:none;border:1px solid #7a4a3e;color:#d99a84;border-radius:999px;
+  padding:7px 18px;font-size:13.5px;
+}
+.btn-danger:hover{background:#3a251e}
+
+@media (max-width:720px){
+  .deck-legend{grid-template-columns:repeat(2,1fr)}
+  .decks{grid-template-columns:repeat(2,1fr);gap:10px}
+  .wrap{padding-block:28px 48px}
+  .deck-card{min-height:104px}
+  .qcard{min-height:220px}
+}
+</style>
+
+<div class="wrap">
+
+  <!-- ===== 1. intro：介紹 + 選人數 ===== -->
+  <section id="intro">
+    <p class="kicker">Getting to Know Someone Deeply</p>
+    <h1 class="title">深刻地認識一個人</h1>
+    <p class="title-en">一場促進深度交流與理解的互動體驗</p>
+    <p class="lede">透過循序漸進的提問卡牌，引導彼此探索內心世界，建立真實而有意義的連結。</p>
+    <p class="lede-en">Through progressively deeper question cards, explore each other's inner worlds and build genuine, meaningful connections.</p>
+
+    <div class="meta-row">
+      <span class="meta-chip">建議人數 <b>2–8 人</b></span>
+      <span class="meta-chip">卡牌 <b>100 張</b></span>
+      <span class="meta-chip">需要的只有 <b>一顆敞開的心</b></span>
+    </div>
+
+    <div class="deck-legend" id="deckLegend"></div>
+
+    <div class="players-box">
+      <h2>今晚有幾個人？</h2>
+      <p class="hint">抽牌會照順序輪流，每抽一張換下一位。</p>
+      <div class="player-opts" id="playerOpts"></div>
+    </div>
+
+    <div class="start-row">
+      <button class="btn-primary" id="startBtn">開始遊戲</button>
+    </div>
+  </section>
+
+  <!-- ===== 2. ritual：開場白 ===== -->
+  <section id="ritual" hidden>
+    <div class="ritual-head">
+      <h1>遊戲開場</h1>
+      <p>選出一位主持人，帶領大家朗讀開場白，幫助彼此進入遊戲的心境與氛圍。</p>
+    </div>
+    <div class="ritual">
+      <p>「親愛的朋友，請閉上雙眼。在這一刻，我們即將開啟一場關於深刻認識彼此的旅程。請感受此刻我們齊聚於此的緣分。</p>
+      <p>在這裡，我們不評判對與錯，不區分好與壞，只帶著真誠與善意，去聆聽每一個故事。這些故事，將成為你我此生獨一無二的啟發。我們信任並期盼彼此心與心的連結。今天，我們的支持與接納，將成為這場對話最美好的回覆。</p>
+      <p>現在，讓我們回歸純粹，帶著好奇與敞開的心，一起踏上這場深刻認識彼此的旅程。」</p>
+      <hr>
+      <p class="en">"Dear friends, please close your eyes. At this moment, we are about to begin a journey of getting to know one another deeply. Feel the fate that brings us together here.</p>
+      <p class="en">Here, we do not judge right from wrong or good from bad. We come with sincerity and kindness to listen to every story. These stories will become a one-of-a-kind inspiration for each of us. We trust, and look forward to, the connection between our hearts. Today, our support and acceptance will be the most beautiful reply to this conversation.</p>
+      <p class="en">Now, let us return to simplicity, and with curiosity and open hearts, set out together on this journey of knowing one another deeply."</p>
+    </div>
+    <div class="start-row">
+      <button class="btn-ghost" id="ritualBack">回上一頁</button>
+      <button class="btn-primary" id="enterBtn">進入牌桌</button>
+    </div>
+  </section>
+
+  <!-- ===== 3. game：牌桌 ===== -->
+  <section id="game" hidden>
+    <div class="game-head">
+      <h1>深刻地認識一個人</h1>
+      <span class="right">
+        <button class="btn-ghost" id="backBtn">開場白</button>
+      </span>
+    </div>
+
+    <div class="turn-banner" id="turnBanner"></div>
+
+    <div class="decks" id="decks"></div>
+
+    <div class="stage">
+      <div class="card-slot">
+        <div class="qcard placeholder" id="qcard">
+          <p class="zh">從上方四疊牌中點一疊抽卡。<br>從暖身開始，氣氛熱了再往星星走。</p>
+        </div>
+      </div>
+      <div class="stage-actions">
+        <button class="btn-ghost" id="skipBtn" hidden>略過這張，放回牌堆</button>
+        <button class="btn-ghost" id="againBtn" hidden>同一疊抽下一張</button>
+      </div>
+    </div>
+
+    <div class="helpers">
+      <details>
+        <summary>四個步驟與接話小幫手 <span class="s-en">How to play &amp; conversation helper</span></summary>
+        <div class="d-body">
+          <ul class="rules steps">
+            <li>抽一張卡，邀請另一位玩家回答。<span class="en">Draw a card and invite another player to answer.</span></li>
+            <li>回應並追問回答者。<span class="en">Respond to and follow up with the answerer.</span></li>
+            <li>讚美、鼓勵與支持。<span class="en">Praise, encourage and support.</span></li>
+            <li>引導其他人更深入地分享。<span class="en">Guide others to share more deeply.</span></li>
+          </ul>
+          <p class="steps-note">這不只是單向的回答遊戲，更是彼此探索與共鳴的旅程。用支持的方式鼓勵彼此敞開心扉，產生連結，建立安全感。</p>
+          <div id="helperBody"></div>
+        </div>
+      </details>
+
+      <details>
+        <summary>小約定 <span class="s-en">Ground rules</span></summary>
+        <div class="d-body">
+          <ul class="rules">
+            <li>任何時候都可以說「我想略過」，不需要解釋。<span class="en">You can say "I'd like to pass" at any time, no explanation needed.</span></li>
+            <li>不評判、不打斷，對方沒開口問就不給建議。<span class="en">No judging or interrupting, and no advice unless asked.</span></li>
+            <li>今晚說的故事，留在今晚的桌上。<span class="en">Tonight's stories stay at tonight's table.</span></li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <div class="foot">
+      <span>已抽過的牌會記在這台裝置的瀏覽器裡，重新整理不會重複。</span>
+      <span class="confirm-reset" id="resetArea"></span>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ---------------- data ---------------- */
+const DECKS=[
+{key:"ice",stars:"暖身",name:"暖身破冰卡",en:"Ice-breaker",theme:"輕鬆的小事，先把氣氛熱起來",tc:"var(--tier0)",cards:[
+["如果今天可以在任何地方吃一頓飯，你會選哪裡、吃什麼？","If you could eat anywhere in the world today, where would you go and what would you eat?"],
+["你最近一次大笑是因為什麼事？","What was the last thing that made you laugh out loud?"],
+["用三個詞形容你今天的心情。","Describe your mood today in three words."],
+["你的手機桌布是什麼？為什麼選它？","What's on your phone wallpaper, and why did you pick it?"],
+["早上起床，你一定會做的第一件事是什麼？","What's the first thing you always do after waking up?"],
+["如果能立刻學會一項技能，你想學什麼？","If you could instantly master one skill, what would it be?"],
+["你最喜歡哪一種天氣？它讓你想做什麼事？","What's your favorite kind of weather, and what does it make you want to do?"],
+["你最近重複聽最多次的一首歌或一種聲音是什麼？","What song or sound have you had on repeat lately?"],
+["小時候的你，長大後最想當什麼？","When you were little, what did you want to be when you grew up?"],
+["你會用哪一種動物來形容自己？為什麼？","Which animal would you compare yourself to, and why?"],
+["說一個你覺得被低估了的小確幸。","Name a small joy you think is underrated."],
+["假日如果完全沒有行程，你會怎麼度過？","If you had a weekend with absolutely no plans, how would you spend it?"],
+["你吃過最難忘的一道食物是什麼？","What's the most memorable dish you've ever eaten?"],
+["你有什麼別人聽了會意外的小習慣？","What small habit do you have that would surprise people?"],
+["如果有一天可以隱形，你會做什麼？","If you could be invisible for a day, what would you do?"],
+["你最常用的表情符號是哪一個？它代表你什麼？","Which emoji do you use most, and what does it say about you?"],
+["你出門一定會帶的三樣東西是什麼？","What three things do you never leave home without?"],
+["如果有一部電影可以重看一百次，你會選哪一部？","If you could rewatch one movie a hundred times, which would it be?"],
+["你最喜歡所在城市裡的哪一個角落？","What's your favorite corner of your city?"],
+["此刻，你最想要的一樣東西是什麼？不一定要買得到。","Right now, what's one thing you want most? It doesn't have to be something you can buy."]
+]},
+{key:"one",stars:"⭐",name:"一星連結卡",en:"One-star Connection",theme:"分享日常、回憶與喜好",tc:"var(--tier1)",cards:[
+["你小時候最喜歡的遊戲或玩具是什麼？現在想起來有什麼感覺？","What was your favorite game or toy as a child? How do you feel when you think of it now?"],
+["有沒有哪位老師或長輩對你影響很深？他做了什麼？","Is there a teacher or elder who deeply influenced you? What did they do?"],
+["你覺得自己最像家裡的哪一位成員？哪裡像？","Which family member are you most like, and in what way?"],
+["你最近一次感到被照顧是什麼時候？","When was the last time you felt taken care of?"],
+["哪一個地方最能讓你放鬆？那裡有什麼？","Where do you feel most relaxed? What's there?"],
+["朋友通常會怎麼形容你？你同意嗎？","How do your friends usually describe you? Do you agree?"],
+["說一件你做過最勇敢的小事。","Tell us about the bravest small thing you've ever done."],
+["你曾經因為好奇而嘗試過什麼新事物？後來怎麼了？","What new thing have you tried out of curiosity? How did it turn out?"],
+["在工作或學習中，什麼時刻最讓你有成就感？","At work or in your studies, what moments make you feel most accomplished?"],
+["有沒有一首歌或一部作品，在你人生的某段時間陪伴過你？","Is there a song or a work of art that kept you company during a certain time in your life?"],
+["你最珍惜的一件物品是什麼？它有什麼故事？","What's the possession you treasure most? What's its story?"],
+["一天裡，哪一段時間是你最喜歡的？為什麼？","Which part of the day do you like best, and why?"],
+["你最欣賞別人身上的哪一種特質？","What quality do you admire most in other people?"],
+["你目前的生活中，有什麼事讓你感到期待？","What are you looking forward to in your life right now?"],
+["你曾經被什麼事感動到想哭，或差點哭出來？","When were you last so moved that you cried, or almost did?"],
+["有什麼事是你以前不喜歡，現在卻愛上了？","What's something you used to dislike but now love?"],
+["你覺得自己在哪方面比三年前更成熟？","In what way are you more mature than you were three years ago?"],
+["如果能和十年前的自己見面喝杯咖啡，你會聊什麼？","If you could have coffee with yourself from ten years ago, what would you talk about?"],
+["你覺得人和人之間，最容易被忽略的小溫柔是什麼？","What's the small kindness between people that you think is most overlooked?"],
+["糟糕的一天過後，你怎麼讓自己恢復過來？","After a bad day, how do you get yourself back on your feet?"],
+["有沒有一個你一直想去、卻還沒去成的地方？是什麼讓你沒去成？","Is there a place you've always wanted to go but haven't? What's held you back?"],
+["你小時候的家，有什麼味道或聲音是你至今還記得的？","What smell or sound from the home you grew up in do you still remember?"],
+["你最近學到的一件事是什麼？是誰或什麼讓你學到的？","What's one thing you've learned recently? Who or what taught you?"],
+["對你來說，「家」是什麼？不一定是房子。","What does \"home\" mean to you? It doesn't have to be a house."],
+["在朋友之間，你通常扮演什麼角色？","Among your friends, what role do you usually play?"],
+["有哪一次旅行或遠行，改變了你看事情的方式？","Has a trip or a journey ever changed the way you see things?"],
+["你收過最貼心的禮物或一句話是什麼？","What's the most thoughtful gift or kind word you've ever received?"],
+["你覺得別人第一眼會怎麼看你？實際上的你有什麼不一樣？","What do you think people assume about you at first glance? How are you different in reality?"],
+["你現在最想要哪一種生活節奏：慢、快、穩定，還是冒險？","Which pace of life do you want most right now: slow, fast, steady, or adventurous?"],
+["有什麼事是你做了之後，會覺得「這才是我」？","What do you do that makes you think, \"This is who I really am\"?"]
+]},
+{key:"two",stars:"⭐⭐",name:"二星連結卡",en:"Two-star Connection",theme:"談感受、關係與脆弱的時刻",tc:"var(--tier2)",cards:[
+["你最近在煩惱什麼？有沒有人知道？","What's been weighing on you lately? Does anyone know about it?"],
+["你曾經失去過什麼重要的人事物？它教會了你什麼？","What important person or thing have you lost? What did it teach you?"],
+["在什麼時候，你最容易懷疑自己？","When are you most likely to doubt yourself?"],
+["有沒有哪一段關係的結束，改變了你？","Has the end of a relationship ever changed you?"],
+["你最怕讓誰失望？為什麼？","Whom are you most afraid of letting down, and why?"],
+["你覺得自己最大的矛盾是什麼？例如想要自由，又渴望安定。","What do you think is your biggest contradiction? For example, wanting freedom while craving stability."],
+["你做過哪個決定，到現在仍不確定對不對？","What decision have you made that you're still not sure was right?"],
+["你小時候有什麼需要或渴望，沒有被好好滿足？","As a child, what need or longing of yours was never fully met?"],
+["在什麼情況下，你最難說出「我需要幫忙」？","In what situations is it hardest for you to say, \"I need help\"?"],
+["你有什麼習慣，是為了保護自己而養成的？","What habit have you developed to protect yourself?"],
+["你最近一次生氣是為了什麼？背後真正在意的是什麼？","What were you last angry about? What did you really care about underneath?"],
+["在愛、友情或親情裡，你通常付出得比較多，還是接受得比較多？","In love, friendship, or family, do you tend to give more or receive more?"],
+["有沒有一句話，你希望曾經有人對你說過？","Is there something you wish someone had said to you?"],
+["你有沒有對誰存著一句沒說出口的感謝？","Is there someone you've been meaning to thank but never did?"],
+["你和父母或主要照顧者的關係，這幾年有什麼變化？","How has your relationship with your parents or main caregiver changed over the past few years?"],
+["你怎麼知道一個人值得信任？","How do you know when someone can be trusted?"],
+["你有沒有因為太在意別人的眼光，而放棄過什麼？","Have you ever given something up because you cared too much about what others think?"],
+["你曾經為了什麼事勉強自己撐過去？","When have you forced yourself to push through something?"],
+["有什麼事是你「應該」要做，但其實很不想做的？","What is something you \"should\" do but really don't want to?"],
+["你通常在什麼情境下會覺得孤單？","In what situations do you usually feel lonely?"],
+["你最近一次對自己說「你已經很努力了」，是什麼時候？","When did you last tell yourself, \"You've worked hard enough\"?"],
+["你希望被怎樣的方式愛著或陪伴著？","How do you want to be loved or accompanied?"],
+["你曾經原諒過誰，包括自己？那個過程是怎樣的？","Whom have you forgiven, yourself included? What was that process like?"],
+["有沒有哪個目標，你曾經很想要，後來決定放下了？","Is there a goal you once wanted badly but decided to let go of?"],
+["你覺得自己在哪些方面，還在學習對自己溫柔？","In what ways are you still learning to be gentle with yourself?"],
+["什麼樣的時刻，會讓你覺得「我被真正看見了」？","What moments make you feel, \"I was truly seen\"?"],
+["在人群中，你什麼時候會覺得自己像局外人？","When do you feel like an outsider in a crowd?"],
+["你和誰的關係，是你希望能更靠近的？","With whom do you wish you could be closer?"],
+["你曾經在什麼時候，意外發現自己比想像中堅強？","When did you unexpectedly discover you were stronger than you thought?"],
+["情緒低落的時候，你希望身邊的人怎麼做？又希望他們不要怎麼做？","When you're feeling low, what do you hope the people around you will do? And what do you hope they won't?"]
+]},
+{key:"three",stars:"⭐⭐⭐",name:"三星連結卡",en:"Three-star Connection",theme:"觸及價值、遺憾與生命的意義",tc:"var(--tier3)",cards:[
+["如果接下來只剩一年，你會把時間留給誰、做什麼？","If you had only one year left, whom would you spend it with and what would you do?"],
+["你生命中最重要的一次轉折是什麼？它如何改變了你？","What's the most important turning point in your life? How did it change you?"],
+["你覺得自己這輩子最想完成的一件事是什麼？","What's the one thing you most want to accomplish in your lifetime?"],
+["你最深的恐懼是什麼？它是從什麼時候開始的？","What's your deepest fear? When did it begin?"],
+["你最遺憾的一件事是什麼？如果能重來，你會怎麼做？","What's your greatest regret? If you could do it over, what would you do differently?"],
+["有沒有一句話，你一直想對某個人說，卻始終沒說出口？","Is there something you've always wanted to say to someone but never have?"],
+["就算沒有成就或頭銜，你覺得自己真正的價值在哪裡？","Without achievements or titles, where do you think your true worth lies?"],
+["你曾經在什麼時候，深深感受到被愛？","When did you feel deeply loved?"],
+["你希望別人在你不在的時候，怎麼談起你？","How would you want people to talk about you when you're gone?"],
+["你覺得自己活成了小時候期待的樣子嗎？哪些是，哪些不是？","Have you become the person you hoped to be as a child? What's true and what isn't?"],
+["你曾經因為什麼事，徹底改變了自己的想法或信念？","What has ever completely changed your mind or your beliefs?"],
+["你人生中最艱難的一段時間，是什麼讓你走了過來？","What got you through the hardest period of your life?"],
+["你想對現在的自己說什麼？","What would you say to your present self?"],
+["你最想修復的一段關係是哪一段？你願意為它做什麼？","Which relationship do you most want to mend? What would you be willing to do for it?"],
+["對你來說，什麼才是「好好活著」？","What does it mean to you to \"live well\"?"],
+["你有什麼天賦或渴望，一直沒有勇氣去實現？","What talent or longing have you never had the courage to pursue?"],
+["你想留給這個世界，或身邊的人什麼？","What do you want to leave to the world, or to the people around you?"],
+["你最感謝的人是誰？如果現在能對他說話，你會說什麼？","Who are you most grateful for? If you could speak to them now, what would you say?"],
+["在這個世界上，你最想被誰真正懂得？你希望他懂你的什麼？","Who in this world do you most want to be truly understood by? What do you hope they understand about you?"],
+["聽完今晚大家的故事，你最想帶走的一個感受是什麼？","After hearing everyone's stories tonight, what's one feeling you want to take with you?"]
+]}];
+
+const HELPERS=[
+{h:"追問 Follow up",items:[["後來呢？","And then what happened?"],["那時候你心裡在想什麼？","What were you thinking at that moment?"],["是什麼讓你這樣選擇？","What led you to choose that?"]]},
+{h:"鼓勵 Encourage",items:[["謝謝你願意說這些。","Thank you for sharing that."],["聽起來這件事對你很重要。","It sounds like this matters a lot to you."],["我能感受到你的用心。","I can feel how much care you put into it."]]},
+{h:"邀請他人 Invite others",items:[["有人也有類似的經驗嗎？","Has anyone had a similar experience?"],["聽到這裡，你想到什麼？","What comes to mind as you listen?"],["換你說說，你會怎麼回答這張卡？","How would you answer this card?"]]}];
+
+/* ---------------- state ---------------- */
+const LS_KEY="deep-know-v2";
+let state={
+  screen:"intro",            // intro | ritual | game
+  players:4,
+  next:1,                    // 下一位抽牌的玩家（1-based）
+  drawn:{ice:[],one:[],two:[],three:[]},
+  current:null               // {deck, idx, player}
+};
+
+function loadState(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    if(raw){const s=JSON.parse(raw);if(s&&s.drawn)state=Object.assign(state,s);}
+  }catch(e){}
+}
+function saveState(){
+  try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){}
+}
+
+/* ---------------- render ---------------- */
+const $=id=>document.getElementById(id);
+const deckByKey=k=>DECKS.find(d=>d.key===k);
+
+function renderLegend(){
+  $("deckLegend").innerHTML=DECKS.map(d=>
+    `<div class="legend-item" style="border-top:3px solid ${d.tc}">
+      <span class="stars" style="color:${d.tc}">${d.stars}</span>
+      <span class="nm">${d.name}</span>
+      <span class="ct">${d.cards.length} 張 · ${d.theme}</span>
+    </div>`).join("");
+}
+
+function renderPlayerOpts(){
+  $("playerOpts").innerHTML=[2,3,4,5,6,7,8].map(n=>
+    `<button type="button" class="${n===state.players?"sel":""}" data-n="${n}" aria-pressed="${n===state.players}">${n}</button>`).join("");
+}
+
+function renderTurn(){
+  $("turnBanner").innerHTML=
+    `<span>輪到</span><span class="pill">玩家 ${state.next}</span><span>抽牌 — 點一疊牌，抽完邀請另一位玩家回答</span>`;
+}
+
+function renderDecks(){
+  $("decks").innerHTML=DECKS.map(d=>{
+    const left=d.cards.length-state.drawn[d.key].length;
+    const empty=left===0;
+    const active=state.current&&state.current.deck===d.key;
+    return `<button class="deck${empty?" empty":""}${active?" active":""}" style="--tc:${d.tc}" data-deck="${d.key}"
+      aria-label="${d.name}，剩 ${left} 張${empty?"，點一下重新洗牌再抽":"，點一下抽卡"}">
+      <span class="deck-card">
+        <span class="stars">${d.stars}</span>
+        <span class="nm">${d.name}</span>
+        <span class="nm-en">${d.en}</span>
+        <span class="count">${empty?"<b>抽完了 · 點我重洗再抽</b>":`剩 <b>${left}</b> / ${d.cards.length} 張`}</span>
+      </span>
+    </button>`;
+  }).join("");
+}
+
+function renderCard(animate){
+  const el=$("qcard");
+  if(!state.current){
+    el.className="qcard placeholder";
+    el.style.removeProperty("--tc");
+    el.innerHTML=`<p class="zh">從上方四疊牌中點一疊抽卡。<br>從暖身開始，氣氛熱了再往星星走。</p>`;
+    $("skipBtn").hidden=true;
+    $("againBtn").hidden=true;
+    return;
+  }
+  const d=deckByKey(state.current.deck);
+  const [zh,en]=d.cards[state.current.idx];
+  el.className="qcard";
+  el.style.setProperty("--tc",d.tc);
+  el.innerHTML=`
+    <div class="tag-row">
+      <span class="tier">${d.stars} ${d.name}</span>
+      <span>No. ${String(state.current.idx+1).padStart(2,"0")} / ${d.cards.length}</span>
+    </div>
+    <p class="zh">${zh}</p>
+    <p class="en">${en}</p>
+    <p class="who">由 <b>玩家 ${state.current.player}</b> 抽牌 · 請邀請另一位玩家回答，回應後也可以開放大家分享</p>`;
+  if(animate){
+    el.classList.remove("flip");void el.offsetWidth;el.classList.add("flip");
+  }
+  const left=d.cards.length-state.drawn[d.key].length;
+  $("skipBtn").hidden=false;
+  $("againBtn").hidden=false;
+  $("againBtn").textContent=left>0?`同一疊抽下一張（換玩家 ${state.next}）`:"這疊抽完了 · 點牌堆重洗";
+  $("againBtn").disabled=left===0;
+}
+
+function renderHelpers(){
+  $("helperBody").innerHTML=HELPERS.map(g=>
+    `<div class="helper-group"><h3>${g.h}</h3>${
+      g.items.map(([zh,en])=>`<div class="phrase"><span class="zh">${zh}</span><span class="en">${en}</span></div>`).join("")
+    }</div>`).join("");
+}
+
+function showScreen(){
+  $("intro").hidden=state.screen!=="intro";
+  $("ritual").hidden=state.screen!=="ritual";
+  $("game").hidden=state.screen!=="game";
+}
+
+function renderAll(animate){
+  renderTurn();
+  renderDecks();
+  renderCard(animate);
+}
+
+/* ---------------- actions ---------------- */
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function remainingOf(key,excludeIdx){
+  const d=deckByKey(key),out=[];
+  for(let i=0;i<d.cards.length;i++){
+    if(!state.drawn[key].includes(i)&&i!==excludeIdx)out.push(i);
+  }
+  return out;
+}
+
+function draw(key){
+  const d=deckByKey(key);
+  if(state.drawn[key].length>=d.cards.length){
+    state.drawn[key]=[];   // 這疊抽完了：重新洗牌再抽
+  }
+  const remaining=remainingOf(key,-1);
+  if(!remaining.length)return;
+  const idx=pick(remaining);
+  state.drawn[key].push(idx);
+  state.current={deck:key,idx,player:state.next};
+  state.next=state.next%state.players+1;
+  saveState();
+  renderAll(true);
+}
+
+/* 略過：這張放回牌堆（晚點再出現），同一位玩家換抽一張 */
+function skipCurrent(){
+  if(!state.current)return;
+  const {deck,idx,player}=state.current;
+  state.drawn[deck]=state.drawn[deck].filter(i=>i!==idx);
+  const others=remainingOf(deck,idx);          // 避免馬上又抽到同一張
+  const newIdx=others.length?pick(others):idx;
+  state.drawn[deck].push(newIdx);
+  state.current={deck,idx:newIdx,player};      // 抽牌的人不變
+  saveState();
+  renderAll(true);
+}
+
+function resetAll(){
+  state.drawn={ice:[],one:[],two:[],three:[]};
+  state.current=null;
+  state.next=1;
+  saveState();
+  renderAll(false);
+}
+
+/* ---------------- wiring ---------------- */
+function go(screen){
+  state.screen=screen;saveState();showScreen();window.scrollTo({top:0});
+}
+
+function renderResetBtn(){
+  $("resetArea").innerHTML=`<button class="btn-danger" id="resetBtn">重新洗牌整場</button>`;
+  $("resetBtn").addEventListener("click",()=>{
+    $("resetArea").innerHTML=`<span>把 100 張牌全部蓋回去、從玩家 1 重新開始？</span>
+      <button class="btn-danger" id="resetYes">確定重洗</button>
+      <button class="btn-ghost" id="resetNo">先不要</button>`;
+    $("resetYes").addEventListener("click",()=>{resetAll();renderResetBtn();});
+    $("resetNo").addEventListener("click",renderResetBtn);
+  });
+}
+
+function init(){
+  renderLegend();
+  renderHelpers();
+  renderPlayerOpts();
+  renderResetBtn();
+  showScreen();
+  renderAll(false);
+
+  $("playerOpts").addEventListener("click",e=>{
+    const b=e.target.closest("button[data-n]");
+    if(!b)return;
+    state.players=+b.dataset.n;
+    if(state.next>state.players)state.next=1;
+    saveState();renderPlayerOpts();
+  });
+  $("startBtn").addEventListener("click",()=>go("ritual"));
+  $("ritualBack").addEventListener("click",()=>go("intro"));
+  $("enterBtn").addEventListener("click",()=>go("game"));
+  $("backBtn").addEventListener("click",()=>go("ritual"));
+  $("decks").addEventListener("click",e=>{
+    const b=e.target.closest(".deck");
+    if(b)draw(b.dataset.deck);
+  });
+  $("againBtn").addEventListener("click",()=>{
+    if(state.current)draw(state.current.deck);
+  });
+  $("skipBtn").addEventListener("click",skipCurrent);
+}
+
+/* hot-update snapshot：牌桌開著時更新頁面，進度不會不見 */
+function start(snap){
+  loadState();
+  if(snap&&snap.drawn){state=Object.assign(state,snap);saveState();}
+  init();
+  window.claude?.hot?.snapshot?.(()=>state);
+}
+window.claude?.hot?.ready?window.claude.hot.ready(start):start(window.claude?.hot?.data??{});
+</script>
+
+</html>
